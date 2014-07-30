@@ -19,18 +19,21 @@ class HomeController extends BaseController {
 	{
 		return View::make('hello');
 	}
-	public function test(){
+	public function test() {
 		//$transaction = Transaction::find('53d641702a5f5c3b682ca7e5');
-		$transactions = Transaction::take(10)->get();
+		$pageSize = Input::json('pageSize'); 
+		$page = Input::json('page'); 
+		$transactions = User::skip(($page -1) * $pageSize)->take($pageSize)->get();
 		foreach ($transactions as $transaction) {
-			$output[]=array('name'=>$transaction->user->name,'age'=>$transaction->amount);
+			$output[]=array('name'=>$transaction->username,'age'=>$transaction->email);
 		}
-		//var_dump($transaction);
-		//echo $transaction;
-		//
-
 		return Response::json($output);
 		//echo $transaction->user->name;
+	}
+	public function getNumOfPages()  {
+		//$transactions = Transaction::count();
+		//$transactions = Transaction::where('id', '53d648742a5f5c41738b4569')->count();
+		return 5000;
 	}
 
 }

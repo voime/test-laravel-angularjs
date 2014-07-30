@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="/css/foundation.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/ng-grid.min.css">
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="/js/angular.js"></script>
   <script src="/js/angular-sanitize.js"></script>
   <script src="/js/underscore.js"></script>
-  <script src="/js/app.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="/js/ng-grid-2.0.11.min.js"></script>
+  <script src="/js/ng-grid-2.0.11.debug.js"></script>
+  <script src="/js/app.js"></script>
   <script>
     angular.module("app").constant("CSRF_TOKEN", '<?php echo csrf_token(); ?>');
   </script>

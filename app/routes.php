@@ -30,4 +30,7 @@ Route::get('/auth/logout', 'AuthController@logout');
 Route::get('/auth/status', 'AuthController@status');
 Route::get('/auth/secrets','AuthController@secrets');
 
-Route::get('/home/test','HomeController@test');
+Route::post('/home/test','HomeController@test');
+Route::get('/home/pages','HomeController@getNumOfPages');
+
+Route::resource('user', 'UserController');

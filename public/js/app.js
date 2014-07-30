@@ -37,12 +37,12 @@ app.config(function($routeProvider) {
   });
   $routeProvider.when('/test', {
     templateUrl: 'templates/test.html',
-    controller: 'TestController',
-    resolve: {
-      tests : function(TestService) {
-        return TestService.get();
-      }
-    }
+    controller: 'TestController'
+   // resolve: {
+    //  tests : function(TestService) {
+     //   return TestService.get();
+     // }
+    //}
   });
   $routeProvider.when('/books', {
     templateUrl: 'templates/books.html',
@@ -68,14 +68,15 @@ app.run(function($rootScope, $location, AuthenticationService, FlashService) {
     }
   });
 });
-
+/*
 app.factory("TestService", function($http) {
   return {
     get: function() {
-      return $http.get('/home/test');
+      return $http.post('/home/test');
     }
   };
 });
+*/
 app.factory("BookService", function($http) {
   return {
     get: function() {
@@ -175,15 +176,65 @@ app.controller("HomeController", function($scope, $location, AuthenticationServi
   };
 });
 
-app.controller('TestController', function($scope, tests) {
-    $scope.myData = tests.data; 
+app.controller('TestController', function($scope, $http) {
+    //$scope.myData = tests.data; 
     $scope.filterOptions = {
         filterText: "",
         useExternalFilter: true
     }; 
+    $scope.totalServerItems = 0;
+    $scope.pagingOptions = {
+        pageSizes: [250, 500, 1000],
+        pageSize: 250,
+        currentPage: 1
+    };
+    $http.get('/home/pages').success(function (result){ 
+          $scope.totalServerItems = result;
+    });
+
+    $scope.setPagingData = function(data, page, pageSize){ 
+        $scope.myData = data;
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    };
+    $scope.getPagedDataAsync = function (pageSize, page) {
+      var data;
+      var request = $http({
+              method: "post",
+              url: "/home/test",
+              data: {
+              pageSize: pageSize,
+              page: page
+              }
+          });
+      request.success(function (result) {
+        $scope.setPagingData(result,page,pageSize);
+      });
+    };
+
+    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+  
+    $scope.$watch('pagingOptions', function (newVal, oldVal) {
+        if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+          $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+          console.log("click");
+        }
+    }, true);
+    $scope.$watch('filterOptions', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+        }
+    }, true);
+
     $scope.gridOptions = { 
         data: 'myData',
-        columnDefs: [{field:'name', displayName:'Name'}, {field:'age', displayName:'Age'}]
+        enablePaging: true,
+        showFooter: true,
+        totalServerItems: 'totalServerItems',
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions
+        //columnDefs: [{field:'name', displayName:'Name'}, {field:'age', displayName:'Age'}]
     };
 });
 
